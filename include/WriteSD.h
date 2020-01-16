@@ -9,7 +9,7 @@ template <class D> void writeOnSD(File cartesd, const char* monfichier, D data)
   cartesd=SD.open(monfichier, FILE_WRITE);
   if (cartesd)
   {
-    cartesd.println(data);
+    cartesd.print(data);
     cartesd.close();
   }
 }

@@ -39,6 +39,8 @@ void MPU_setup() {
   Wire.write(0x1C);
   Wire.write(0b00000000);
   Wire.endTransmission();
+
+  
 }
 
 void AccelerationReading(double &aX, double &aY, double &aZ){

@@ -1,16 +1,22 @@
 // Ecriture de la carte SD à partir des données de l'accelerometre
 ///////// Boulay Alexis /////////
 ////// Last révision 11/12/2019
+
 #include <Arduino.h>
 #include "Accelero.h"
 #include "WriteSD.h"
 #include <SD.h>
+#include "Integrator.h"
 
 #define LED 7
 File cartesd;
 
 double aX, aY, aZ;
 double gX, gY, gZ;
+double vX(0), vY(0), vZ(0);
+
+unsigned long time, clign;
+bool etatled;
 
 // Initialisation de l'accélérométre
 double dt = 1e-2;
@@ -45,12 +51,34 @@ void setup() {
   Serial.begin(57600);
   MPU_setup();
   digitalWrite(LED,LOW);
+
+  time = millis();
+  clign = millis();
+  writeOnSD(cartesd,"test.txt","Nouvelles acquisitions \n");
 }
 
 void loop() {
   // Accelerometre
-  AccelerationReading(aX, aY, aZ);
-  AngularAccelerationReading(gX, gY, gZ);
-  writeOnSD(cartesd,"test.txt",aZ/16384);
+  while(millis()-time < 6000) //NE PAS OUBLIER DE REMETTRE 1 MINUTE 
+  { 
+    AccelerationReading(aX, aY, aZ);
+    AngularAccelerationReading(gX, gY, gZ);
 
+    writeOnSD(cartesd,"test.txt","aX=");
+    writeOnSD(cartesd,"test.txt",aX/16384);
+
+    writeOnSD(cartesd,"test.txt"," | ay=");
+    writeOnSD(cartesd,"test.txt",aY/16384);
+
+    writeOnSD(cartesd,"test.txt"," | aZ=");
+    writeOnSD(cartesd,"test.txt",aZ/16384);
+
+    writeOnSD(cartesd,"test.txt","\n");
+  }
+  if (millis()-clign > 500)
+  {
+    clign = millis();
+    etatled = !etatled;
+  }
+  digitalWrite(LED,etatled);
 }
